@@ -1,0 +1,7 @@
+services:
+    GGGGino\TourCMSBundle\Service\TourCMS:
+        arguments:
+            - '%ggggino_tourcms.marketplace_id%'
+            - '%ggggino_tourcms.api_key%'
+            - 'simplexml'
+            - '%ggggino_tourcms.timeout%'
