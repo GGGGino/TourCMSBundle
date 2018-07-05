@@ -5,3 +5,8 @@ services:
             - '%ggggino_tourcms.api_key%'
             - 'simplexml'
             - '%ggggino_tourcms.timeout%'
+
+    GGGGino\TourCMSBundle\Service\TourCMSChecker:
+        arguments:
+            - '@GGGGino\TourCMSBundle\Service\TourCMS'
+            - '%ggggino_tourcms.channel_id%'
