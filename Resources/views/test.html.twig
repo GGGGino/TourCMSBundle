@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>TourCMS API Server Check</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: helvetica, sans-serif;
+            font-size: 14px;
+            background: #eee;
+        }
+        ul {
+            max-width: 460px;
+            margin: auto;
+            list-style-type: none;
+        }
+        li {
+            border-radius: 4px;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        li a {
+            display: inline-block;
+            padding: 1px 4px 1px 4px;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+
+        li.ok {
+            background: #DFF0D8;
+            border: 1px solid #D6E9C6;
+            color: #468847;
+
+        }
+        li.ok:before {
+            content: "✔ ";
+        }
+        li.fail {
+            background: #F2DEDE;
+            border: 1px solid #EED3D7;
+            color: #B94A48;
+        }
+        li.fail:before {
+            content: "✘ ";
+        }
+        li.fail a {
+            background: #B94A48;
+            color: #F2DEDE;
+        }
+
+        li.warn {
+            background: #FCF8E3;
+            border: 1px solid #FBEED5;
+            color: #C09853;
+        }
+        li.warn:before {
+            content: "⚑ ";
+        }
+        li.warn a {
+            background: #C09853;
+            color: #FCF8E3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test your setup (Beta)</h1>
+    <p>Any missing components or configuration problems will be shown in red below, yellow items should be checked manually.</p>
+    <h2>PHP</h2>
+    <ul>
+        {{ statusPhpVersion|raw }}
+        {{ statusSimpleXml|raw }}
+        {{ statusCurl|raw }}
+        {{ statusDownload|raw }}
+    </ul>
+    <h2>Your API credentials</h2>
+    <ul>
+        {{ keyCheck|raw }}
+        {{ statusDateTime|raw }}
+        {{ statusApiSettings|raw }}
+        {{ statusTours|raw }}
+    </ul>
+</body>
+</html>
