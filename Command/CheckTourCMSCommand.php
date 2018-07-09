@@ -14,20 +14,30 @@ class CheckTourCMSCommand extends Command
      */
     private $tourCMSChecker;
 
+    /**
+     * CheckTourCMSCommand constructor.
+     * @param TourCMSChecker $tourCMSChecker
+     */
     public function __construct(TourCMSChecker $tourCMSChecker)
     {
         $this->tourCMSChecker = $tourCMSChecker;
-        //$this->tourCMSChecker->setTestAsString(false);
+        $this->tourCMSChecker->setRenderType($tourCMSChecker::RENDER_STRUCTURE);
 
         parent::__construct();
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function configure()
     {
         $this->setName('ggggino:tourcms:check')
             ->setDescription('Check the connection to the TourCMS API');
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln([
@@ -39,7 +49,12 @@ class CheckTourCMSCommand extends Command
         $checks = $this->tourCMSChecker->checkAll();
 
         foreach($checks as $check){
-            $output->writeln($check);
+            list($status, $text) = $check;
+
+            if( $status )
+                $output->writeln('<info>' . $text . '</info>');
+            else
+                $output->writeln('<comment>' . $text . '</comment>');
         }
     }
 }

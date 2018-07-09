@@ -11,6 +11,9 @@ namespace GGGGino\TourCMSBundle\Service;
 
 class TourCMSChecker
 {
+    const RENDER_BOOL = 0;
+    const RENDER_HTML = 1;
+    const RENDER_STRUCTURE = 2;
     /**
      *  Minimum php version
      */
@@ -29,21 +32,21 @@ class TourCMSChecker
     /**
      * If this is true, then every test return a string, otherwise the test return a bool
      *
-     * @var bool
+     * @var integer
      */
-    private $testAsString;
+    private $renderType;
 
     /**
      * TourCMSChecker constructor.
      * @param TourCMS $tourCMS
      * @param string $channelId
-     * @param bool $testAsString
+     * @param integer $renderType
      */
-    public function __construct(TourCMS $tourCMS, string $channelId, bool $testAsString = true)
+    public function __construct(TourCMS $tourCMS, string $channelId, $renderType = self::RENDER_HTML)
     {
         $this->tourCMS = $tourCMS;
         $this->channelId = $channelId;
-        $this->testAsString = $testAsString;
+        $this->renderType = $renderType;
     }
 
     /**
@@ -68,7 +71,7 @@ class TourCMSChecker
     /**
      * Check the php version. It must be at least self::PHP_VERSION_MIN
      *
-     * @return mixed
+     * @return string|bool|array
      */
     public function checkPhpVersion()
     {
@@ -77,7 +80,9 @@ class TourCMSChecker
     }
 
     /**
-     * @return string
+     * Check that controls the simplexml flow
+     *
+     * @return string|bool|array
      */
     public function checkSimpleXML()
     {
@@ -86,7 +91,9 @@ class TourCMSChecker
     }
 
     /**
-     * @return string
+     * Control that the curl functions are available
+     *
+     * @return string|bool|array
      */
     public function checkCurl()
     {
@@ -96,7 +103,7 @@ class TourCMSChecker
     }
 
     /**
-     * @return string
+     * @return string|bool|array
      */
     public function checkDownload()
     {
@@ -124,6 +131,9 @@ class TourCMSChecker
         return $this->renderStatus(false, "", "");
     }
 
+    /**
+     * @return array|bool|string
+     */
     public function checkDateTime()
     {
         $api_check = $this->tourCMS->api_rate_limit_status($this->channelId);
@@ -137,6 +147,9 @@ class TourCMSChecker
         return $this->renderStatus(false, "", "");
     }
 
+    /**
+     * @return array|bool|string
+     */
     public function checkTours()
     {
         $api_check = $this->tourCMS->api_rate_limit_status($this->channelId);
@@ -154,6 +167,9 @@ class TourCMSChecker
         return $this->renderStatus(false, "", "");
     }
 
+    /**
+     * @return string|bool|array
+     */
     public function checkApiSettings()
     {
         $api_check = $this->tourCMS->api_rate_limit_status($this->channelId);
@@ -166,7 +182,7 @@ class TourCMSChecker
     /**
      * Method that checks the authenticity of the key in combination with the channel and marketId
      *
-     * @return string
+     * @return string|bool|array
      */
     public function checkKey()
     {
@@ -191,15 +207,19 @@ class TourCMSChecker
      * @param $status
      * @param $okText
      * @param $failText
-     * @return string|bool
+     * @return string|bool|array
      */
     private function renderStatus($status, $okText, $failText)
     {
-        if( !$this->testAsString )
+        if( $this->renderType == self::RENDER_BOOL )
             return (bool) $status;
 
         $liClass = $status ? 'ok' : 'fail';
         $textToPrint = $status ? $okText : $failText;
+
+        if( $this->renderType == self::RENDER_STRUCTURE ) {
+            return array($status, $textToPrint);
+        }
 
         if( empty($textToPrint) )
             return "";
@@ -208,12 +228,12 @@ class TourCMSChecker
     }
 
     /**
-     * @param boolean $testAsString
+     * @param boolean $renderType
      * @return TourCMSChecker
      */
-    public function setTestAsString($testAsString)
+    public function setRenderType($renderType)
     {
-        $this->testAsString = $testAsString;
+        $this->renderType = $renderType;
         return $this;
     }
 }

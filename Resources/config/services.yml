@@ -10,7 +10,6 @@ services:
         arguments:
             - '@GGGGino\TourCMSBundle\Service\TourCMS'
             - '%ggggino_tourcms.channel_id%'
-            - true
 
     GGGGino\TourCMSBundle\Command\CheckTourCMSCommand:
         arguments:
