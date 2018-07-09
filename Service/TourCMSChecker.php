@@ -27,14 +27,23 @@ class TourCMSChecker
     private $channelId;
 
     /**
+     * If this is true, then every test return a string, otherwise the test return a bool
+     *
+     * @var bool
+     */
+    private $testAsString;
+
+    /**
      * TourCMSChecker constructor.
      * @param TourCMS $tourCMS
      * @param string $channelId
+     * @param bool $testAsString
      */
-    public function __construct(TourCMS $tourCMS, string $channelId)
+    public function __construct(TourCMS $tourCMS, string $channelId, bool $testAsString = true)
     {
         $this->tourCMS = $tourCMS;
         $this->channelId = $channelId;
+        $this->testAsString = $testAsString;
     }
 
     /**
@@ -112,7 +121,7 @@ class TourCMSChecker
             }
         }
 
-        return "";
+        return $this->renderStatus(false, "", "");
     }
 
     public function checkDateTime()
@@ -122,10 +131,10 @@ class TourCMSChecker
         $api_ok = (string) $api_check->error == "OK";
 
         if(!$api_ok && strpos((string)$api_check->error, "_TIME")!==false) {
-            return "<li class=\"fail\">It looks like the Date/Time of your server is incorrect. According to your server the time in GMT is: <strong>" . gmdate('H:i  l (\G\M\T)') . "</strong>. You can compare that to the actual time in GMT by using this <a href=\"https://www.google.co.uk/search?q=current+time+gmt\">Google search</a><br />(it doesn't matter if it's a few minutes out).</li>";
+            return $this->renderStatus(false, "", "It looks like the Date/Time of your server is incorrect. According to your server the time in GMT is: <strong>" . gmdate('H:i  l (\G\M\T)') . "</strong>. You can compare that to the actual time in GMT by using this <a href=\"https://www.google.co.uk/search?q=current+time+gmt\">Google search</a><br />(it doesn't matter if it's a few minutes out).");
         }
 
-        return "";
+        return $this->renderStatus(false, "", "");
     }
 
     public function checkTours()
@@ -142,7 +151,7 @@ class TourCMSChecker
             return $this->renderStatus($has_tours, "Found <strong>" . $tour_search->total_tour_count . "</strong> tours", "No tours found");
         }
 
-        return "";
+        return $this->renderStatus(false, "", "");
     }
 
     public function checkApiSettings()
@@ -162,15 +171,15 @@ class TourCMSChecker
     public function checkKey()
     {
         if($this->tourCMS->getPrivateKey() == "") {
-            return "<li class=\"fail\">You have not provided an API Key</li>";
+            return $this->renderStatus(false, "", "You have not provided an API Key");
         } else {
             if($this->channelId == 0 && $this->tourCMS->getMarketpId() == 0) {
-                return "<li class=\"fail\">If you are calling the API as an operator you must pass a Channel ID when calling <strong>test_environment();</strong><br>&nbsp;<br>If you are calling as an agent you must use their Marketplace ID when you initiate the <strong>TourCMS</strong> class (optonally also pass a Channel ID to <strong>test_environment</strong> your API connection to a specific operator).</li>";
+                return $this->renderStatus(false, "", "If you are calling the API as an operator you must pass a Channel ID when calling <strong>test_environment();</strong><br>&nbsp;<br>If you are calling as an agent you must use their Marketplace ID when you initiate the <strong>TourCMS</strong> class (optonally also pass a Channel ID to <strong>test_environment</strong> your API connection to a specific operator).");
             } else {
                 if($this->tourCMS->getMarketpId() != 0) {
-                    return "<li class=\"ok\">Attempting to call the API as Agent <strong>" . $this->tourCMS->getMarketpId() .  "</strong></li>";
+                    return $this->renderStatus(true, "Attempting to call the API as Agent <strong>" . $this->tourCMS->getMarketpId() .  "</strong>", "");
                 } else {
-                    return "<li class=\"ok\">Attempting to call the API as Operator with Channel ID <strong>" . $this->channelId . "</strong></li>";
+                    return $this->renderStatus(true, "Attempting to call the API as Operator with Channel ID <strong>" . $this->channelId . "</strong>", "");
                 }
             }
         }
@@ -182,13 +191,29 @@ class TourCMSChecker
      * @param $status
      * @param $okText
      * @param $failText
-     * @return string
+     * @return string|bool
      */
     private function renderStatus($status, $okText, $failText)
     {
+        if( !$this->testAsString )
+            return (bool) $status;
+
         $liClass = $status ? 'ok' : 'fail';
         $textToPrint = $status ? $okText : $failText;
 
+        if( empty($textToPrint) )
+            return "";
+
         return "<li class='" . $liClass . "'>" . $textToPrint . "</li>";
+    }
+
+    /**
+     * @param boolean $testAsString
+     * @return TourCMSChecker
+     */
+    public function setTestAsString($testAsString)
+    {
+        $this->testAsString = $testAsString;
+        return $this;
     }
 }
