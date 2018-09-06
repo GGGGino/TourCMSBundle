@@ -236,4 +236,12 @@ class TourCMSChecker
         $this->renderType = $renderType;
         return $this;
     }
+
+    /**
+     * @return TourCMS
+     */
+    public function getTourCMS()
+    {
+        return $this->tourCMS;
+    }
 }

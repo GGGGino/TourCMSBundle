@@ -43,18 +43,19 @@ class CheckTourCMSCommand extends Command
         $output->writeln([
             '',
             'Check Tour CMS API',
+            $this->tourCMSChecker->getTourCMS()->getPrivateKey(),
             '==================',
         ]);
 
         $checks = $this->tourCMSChecker->checkAll();
 
-        foreach($checks as $check){
+        foreach($checks as $key => $check){
             list($status, $text) = $check;
 
             if( $status )
-                $output->writeln('<info>' . $text . '</info>');
+                $output->writeln('<info>' . $key . ': ' . $text . '</info>');
             else
-                $output->writeln('<comment>' . $text . '</comment>');
+                $output->writeln('<comment>' . $key . ': ' . $text . '</comment>');
         }
     }
 }
